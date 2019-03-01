@@ -115,19 +115,21 @@ class Photo:
         self.parsed_text = self.text
         return self.parsed_text
 
-    def google_books_search(self, parsed_text=""):
+    def google_books_search(self, parsed_text="", is_only_comics=True):
         """
-        google books search api を使ってテキストから本のタイトルを取得します。
+        google books search api を使ってテキストから本（たぶん漫画のみ）のタイトルを取得します。
 
         Parameters
         ----------
         parsed_text : str
             テキストです。先にparse_text()を使った場合はオプションです。
+        is_only_comics : bool, default True
+            comicsのみを抽出したいときに使います。
 
         Returns
         -------
         titles : list
-            検索で見つかった本のタイトルのリストです。
+            検索で見つかった本（たぶん漫画のみ）のタイトルのリストです。
 
         """
         if parsed_text:
@@ -138,9 +140,13 @@ class Photo:
         res = requests.get(url)
         res.raise_for_status()
         json_ = json.loads(res.text)
-        books = json_["items"][:]
+        books = [book["volumeInfo"] for book in json_["items"]]
         titles = list()
         for book in books:
-            titles.append(book["volumeInfo"]["title"])
+            if is_only_comics:
+                if "comic" in book.get("categories", "Non_genre")[0].lower():
+                    titles.append(book["title"])
+            else:
+                titles.append(book["title"])
         return titles
 
