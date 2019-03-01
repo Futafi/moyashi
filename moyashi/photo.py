@@ -5,13 +5,13 @@
     >>> from photo import Photo
     >>> photo = Photo("YOUR-API-KEY", "PHOTO-URL")
     >>> photo.google_similar_photo()
-    Photo title
+    photo title
     >>> photo.vision_api()
     photo's text
     >>> photo.parse_text()
     parsed_text
     >>> photo.google_books_search()
-    Photo title
+    book titles
 
 """
 from bs4 import BeautifulSoup
@@ -51,7 +51,7 @@ class Photo:
 
         Returns
         -------
-        titlw : str
+        title : str
             予測結果です。
 
         """
