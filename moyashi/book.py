@@ -33,4 +33,10 @@ class Book:
     def search_in_google_books(self, title: str = ""):
         if title:
             self.title = title
+        url = self.google_books_base_url + self.title
+        res = requests.get(url)
+        res.raise_for_status()
+        json_ = json.loads(res.text)
+        self.url_google_books = json_["items"][0]["saleInfo"]["buyLink"]
+
         return self.url_google_books
