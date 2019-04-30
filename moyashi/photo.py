@@ -15,12 +15,13 @@
 
 """
 from bs4 import BeautifulSoup
+from .parser import BaseParser
 import requests
 import json
 
 
 class Photo:
-    def __init__(self, vision_api_key, photo_url=""):
+    def __init__(self, vision_api_key, photo_url="", parser=BaseParser):
         """
         Parameters
         ----------
@@ -39,6 +40,7 @@ class Photo:
             "requests": [{"image": {"source": {"imageUri": ""}}, "features": [{"type": "TEXT_DETECTION", }]}]}
         self.text = ""
         self.parsed_text = ""
+        self.parser = parser
 
     def google_similar_photo(self, photo_url=""):
         """
@@ -93,7 +95,7 @@ class Photo:
         self.text = json_res["responses"][0]["fullTextAnnotation"]["text"]
         return self.text
 
-    def parse_text(self, text=""):
+    def parse_text(self, text="", **kwargs):
         """
         vision apiで抽出したテキストをgoogle books api用にパースします。
 
@@ -106,13 +108,14 @@ class Photo:
         -------
         parsed_text : str
             パースしたテキストです。
-
         """
         if text:
             self.text = text
         elif not self.text:
             raise TypeError("パースする文字列を指定してください。")
-        self.parsed_text = self.text
+        if kwargs.get("parser"):
+            self.parser = kwargs["parser"]
+        self.parsed_text = self.parser(self.text).parse_text()
         return self.parsed_text
 
     def google_books_search(self, parsed_text="", is_only_comics=True):
@@ -149,4 +152,3 @@ class Photo:
             else:
                 titles.append(book["title"])
         return titles
-
