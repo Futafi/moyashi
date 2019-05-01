@@ -12,7 +12,7 @@ Installation
 -------------
 
 
-    $pip install https://github.com/Futafi/moyashi
+    $pip install git+https://github.com/Futafi/moyashi
 
 
 API
